@@ -46,7 +46,7 @@
     "wif": "^2.0.6"
   },
   "deprecated": false,
-  "description": "Agama wallet library.",
+  "description": "Dion wallet library.",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
@@ -59,7 +59,7 @@
   ],
   "homepage": "https://github.com/jldrnd/agama-wallet-lib",
   "keywords": [
-    "agama wallet",
+    "dion wallet",
     "wallet",
     "komodo",
     "supernet"

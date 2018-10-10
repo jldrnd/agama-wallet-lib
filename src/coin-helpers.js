@@ -32,7 +32,8 @@ const _komodoAssetChains = [
   'CHAIN',
   'ZILLA',
   'DSEC',
-  'VRSC'
+  'VRSC',
+  'DION'
 ];
 
 const _komodoCoins = _komodoAssetChains.concat([
@@ -138,6 +139,7 @@ const explorerList = {
   FLASH: 'https://explorer.flashcoin.io',
   ZILLA: 'http://zilla.explorer.dexstats.info',
   XZC: 'https://explorer.zcoin.io',
+  DION: 'http://78.47.205.239:3050',
 };
 
 const explorerListExt = {
