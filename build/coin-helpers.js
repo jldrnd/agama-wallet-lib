@@ -1,11 +1,9 @@
-'use strict';
+const _komodoAssetChains = ['SUPERNET', 'REVS', 'PANGEA', 'DEX', 'JUMBLR', 'BET', 'CRYPTO', 'COQUI', 'HODL', 'MSHARK', 'BOTS', 'MGW', 'MVP', 'KV', 'CEAL', 'MESH', 'WLC', 'MNZ', 'AXO', 'ETOMIC', 'BTCH', 'BEER', 'PIZZA', 'OOT', 'NINJA', 'VOTE2018', 'GLXT', 'EQL', 'BNTN', 'PRLPAY', 'CHAIN', 'ZILLA', 'DSEC', 'VRSC', 'DION'];
 
-var _komodoAssetChains = ['SUPERNET', 'REVS', 'PANGEA', 'DEX', 'JUMBLR', 'BET', 'CRYPTO', 'COQUI', 'HODL', 'MSHARK', 'BOTS', 'MGW', 'MVP', 'KV', 'CEAL', 'MESH', 'WLC', 'MNZ', 'AXO', 'ETOMIC', 'BTCH', 'BEER', 'PIZZA', 'OOT', 'NINJA', 'VOTE2018', 'GLXT', 'EQL', 'BNTN', 'PRLPAY', 'CHAIN', 'ZILLA', 'DSEC', 'VRSC'];
+const _komodoCoins = _komodoAssetChains.concat(['CHIPS', 'KMD', 'KOMODO']);
 
-var _komodoCoins = _komodoAssetChains.concat(['CHIPS', 'KMD', 'KOMODO']);
-
-var isKomodoCoin = function isKomodoCoin(coin, skipKMD) {
-  return _komodoCoins.find(function (element) {
+const isKomodoCoin = (coin, skipKMD) => {
+  return _komodoCoins.find(element => {
     if (skipKMD) {
       return element === coin.toUpperCase() && coin.toUpperCase() !== 'KMD' && coin.toUpperCase() !== 'KOMODO';
     } else {
@@ -15,7 +13,7 @@ var isKomodoCoin = function isKomodoCoin(coin, skipKMD) {
 };
 
 // TODO: add at least 2 explorers per coin
-var explorerList = {
+const explorerList = {
   KMD: 'https://www.kmdexplorer.io',
   KV: 'https://kv.kmdexplorer.io',
   OOT: 'http://explorer.utrum.io',
@@ -100,18 +98,19 @@ var explorerList = {
   CDN: 'https://explorer.canadaecoin.ca',
   FLASH: 'https://explorer.flashcoin.io',
   ZILLA: 'http://zilla.explorer.dexstats.info',
-  XZC: 'https://explorer.zcoin.io'
+  XZC: 'https://explorer.zcoin.io',
+  DION: 'http://78.47.205.239:3050'
 };
 
-var explorerListExt = {
+const explorerListExt = {
   DEX: 'http://dex.explorer.komodo.services',
   SUPERNET: 'http://supernet.explorer.komodo.services'
 };
 
 module.exports = {
-  isKomodoCoin: isKomodoCoin,
-  explorerList: explorerList,
-  explorerListExt: explorerListExt,
+  isKomodoCoin,
+  explorerList,
+  explorerListExt,
   kmdAssetChains: _komodoAssetChains,
   kmdCoins: _komodoCoins // all coins that share R-addresses
 };

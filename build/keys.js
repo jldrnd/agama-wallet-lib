@@ -1,17 +1,15 @@
-'use strict';
+const sha256 = require('js-sha256');
+const crypto = require('crypto');
+const bigi = require('bigi');
+const bitcoinZcash = require('bitcoinjs-lib-zcash');
+const bitcoin = require('bitcoinjs-lib');
+const bitcoinPos = require('bitcoinjs-lib-pos');
+const bs58check = require('bs58check');
+const bip39 = require('bip39');
 
-var sha256 = require('js-sha256');
-var crypto = require('crypto');
-var bigi = require('bigi');
-var bitcoinZcash = require('bitcoinjs-lib-zcash');
-var bitcoin = require('bitcoinjs-lib');
-var bitcoinPos = require('bitcoinjs-lib-pos');
-var bs58check = require('bs58check');
-var bip39 = require('bip39');
-
-var addressVersionCheck = function addressVersionCheck(network, address) {
+const addressVersionCheck = (network, address) => {
   try {
-    var _b58check = network.isZcash ? bitcoinZcash.address.fromBase58Check(address) : bitcoin.address.fromBase58Check(address);
+    const _b58check = network.isZcash ? bitcoinZcash.address.fromBase58Check(address) : bitcoin.address.fromBase58Check(address);
 
     if (_b58check.version === network.pubKeyHash || _b58check.version === network.scriptHash) {
       return true;
@@ -23,8 +21,8 @@ var addressVersionCheck = function addressVersionCheck(network, address) {
   }
 };
 
-var wifToWif = function wifToWif(wif, network) {
-  var key = void 0;
+const wifToWif = (wif, network) => {
+  let key;
 
   if (network.isZcash) {
     key = new bitcoinZcash.ECPair.fromWIF(wif, network, true);
@@ -38,9 +36,9 @@ var wifToWif = function wifToWif(wif, network) {
   };
 };
 
-var seedToWif = function seedToWif(seed, network, iguana) {
-  var hash = sha256.create().update(seed);
-  var bytes = hash.array();
+const seedToWif = (seed, network, iguana) => {
+  const hash = sha256.create().update(seed);
+  let bytes = hash.array();
 
   if (iguana) {
     bytes[0] &= 248;
@@ -48,16 +46,16 @@ var seedToWif = function seedToWif(seed, network, iguana) {
     bytes[31] |= 64;
   }
 
-  var d = bigi.fromBuffer(bytes);
-  var keyPair = void 0;
+  const d = bigi.fromBuffer(bytes);
+  let keyPair;
 
   if (network.isZcash) {
-    keyPair = new bitcoinZcash.ECPair(d, null, { network: network });
+    keyPair = new bitcoinZcash.ECPair(d, null, { network });
   } else {
-    keyPair = new bitcoin.ECPair(d, null, { network: network });
+    keyPair = new bitcoin.ECPair(d, null, { network });
   }
 
-  var keys = {
+  const keys = {
     pub: keyPair.getAddress(),
     priv: keyPair.toWIF()
   };
@@ -66,10 +64,10 @@ var seedToWif = function seedToWif(seed, network, iguana) {
 };
 
 // login like function
-var stringToWif = function stringToWif(string, network, iguana) {
-  var _wifError = false;
-  var isWif = false;
-  var keys = void 0;
+const stringToWif = (string, network, iguana) => {
+  let _wifError = false;
+  let isWif = false;
+  let keys;
 
   // watchonly
   if (string.match('^[a-zA-Z0-9]{34}$')) {
@@ -106,24 +104,24 @@ var stringToWif = function stringToWif(string, network, iguana) {
   return _wifError ? 'error' : keys;
 };
 
-var bip39Search = function bip39Search(seed, network, matchPattern, addressDepth, accountsCount, includeChangeAddresses, addressDepthOffset, accountCountOffset) {
+const bip39Search = (seed, network, matchPattern, addressDepth, accountsCount, includeChangeAddresses, addressDepthOffset, accountCountOffset) => {
   seed = bip39.mnemonicToSeed(seed);
-  var hdMaster = bitcoin.HDNode.fromSeedBuffer(seed, network);
-  var _defaultAddressDepth = addressDepth;
-  var _defaultAccountCount = accountsCount;
-  var _addresses = [];
-  var _matchingKey = matchPattern ? [] : {};
+  const hdMaster = bitcoin.HDNode.fromSeedBuffer(seed, network);
+  const _defaultAddressDepth = addressDepth;
+  const _defaultAccountCount = accountsCount;
+  let _addresses = [];
+  let _matchingKey = matchPattern ? [] : {};
   accountCountOffset = !accountCountOffset ? 0 : accountCountOffset;
   addressDepthOffset = !addressDepthOffset ? 0 : addressDepthOffset;
 
-  for (var i = Number(accountCountOffset); i < Number(accountCountOffset) + Number(_defaultAccountCount); i++) {
-    for (var j = 0; j < (includeChangeAddresses ? 2 : 1); j++) {
-      for (var k = Number(addressDepthOffset); k < Number(addressDepthOffset) + Number(_defaultAddressDepth); k++) {
-        var _key = hdMaster.derivePath('m/44\'/141\'/' + i + '\'/' + j + '/' + k);
+  for (let i = Number(accountCountOffset); i < Number(accountCountOffset) + Number(_defaultAccountCount); i++) {
+    for (let j = 0; j < (includeChangeAddresses ? 2 : 1); j++) {
+      for (let k = Number(addressDepthOffset); k < Number(addressDepthOffset) + Number(_defaultAddressDepth); k++) {
+        const _key = hdMaster.derivePath(`m/44'/141'/${i}'/${j}/${k}`);
 
         if (!matchPattern) {
           _matchingKey.push({
-            path: 'm/44\'/141\'/' + i + '\'/' + j + '/' + k,
+            path: `m/44'/141'/${i}'/${j}/${k}`,
             pub: _key.keyPair.getAddress(),
             priv: _key.keyPair.toWIF()
           });
@@ -143,9 +141,9 @@ var bip39Search = function bip39Search(seed, network, matchPattern, addressDepth
 };
 
 module.exports = {
-  bip39Search: bip39Search,
-  addressVersionCheck: addressVersionCheck,
-  wifToWif: wifToWif,
-  seedToWif: seedToWif,
-  stringToWif: stringToWif
+  bip39Search,
+  addressVersionCheck,
+  wifToWif,
+  seedToWif,
+  stringToWif
 };

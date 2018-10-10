@@ -1,18 +1,12 @@
-'use strict';
-
-var _networks;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 /*
   Bitcoinjs-lib network params file
 */
 
 // TODO: runtime extend for kmd assets
 
-var bitcoin = require('bitcoinjs-lib');
+const bitcoin = require('bitcoinjs-lib');
 
-var networks = (_networks = {
+let networks = {
   btc: bitcoin.networks.bitcoin,
   ltc: {
     messagePrefix: '\x19Litecoin Signed Message:\n',
@@ -1376,34 +1370,37 @@ var networks = (_networks = {
     pubKeyHash: 0x47,
     scriptHash: 0x05,
     wif: 0xc7
+  },
+  wc: {
+    messagePrefix: '\x18WinCoin Signed Message:\n',
+    bip32: {
+      public: 0x0488b21e,
+      private: 0x0488ade4
+    },
+    pubKeyHash: 0x49,
+    scriptHash: 0x1c,
+    wif: 0xc9
+  },
+  xuez: {
+    messagePrefix: '\x18Xuez Signed Message:\n',
+    bip32: {
+      public: 0x022d2533,
+      private: 0x0221312b
+    },
+    pubKeyHash: 0x4b,
+    scriptHash: 0x12,
+    wif: 0xd4
+  },
+  nrg: { // etk?
+    messagePrefix: '\x18Energicoin Signed Message:\n',
+    bip32: {
+      public: 0x03B8C856,
+      private: 0xD7DC6E9F
+    },
+    pubKeyHash: 0x21,
+    scriptHash: 0x35,
+    wif: 0x6a
   }
-}, _defineProperty(_networks, 'wc', {
-  messagePrefix: '\x18WinCoin Signed Message:\n',
-  bip32: {
-    public: 0x0488b21e,
-    private: 0x0488ade4
-  },
-  pubKeyHash: 0x49,
-  scriptHash: 0x1c,
-  wif: 0xc9
-}), _defineProperty(_networks, 'xuez', {
-  messagePrefix: '\x18Xuez Signed Message:\n',
-  bip32: {
-    public: 0x022d2533,
-    private: 0x0221312b
-  },
-  pubKeyHash: 0x4b,
-  scriptHash: 0x12,
-  wif: 0xd4
-}), _defineProperty(_networks, 'nrg', { // etk?
-  messagePrefix: '\x18Energicoin Signed Message:\n',
-  bip32: {
-    public: 0x03B8C856,
-    private: 0xD7DC6E9F
-  },
-  pubKeyHash: 0x21,
-  scriptHash: 0x35,
-  wif: 0x6a
-}), _networks);
+};
 
 module.exports = networks;

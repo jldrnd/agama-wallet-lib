@@ -1,13 +1,8 @@
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var maskPubAddress = exports.maskPubAddress = function maskPubAddress(pub) {
+export const maskPubAddress = pub => {
   // keep 3 first and 3 last chars unmasked
-  var masked = '';
+  let masked = '';
 
-  for (var i = 0; i < pub.length - 3 * 2; i++) {
+  for (let i = 0; i < pub.length - 3 * 2; i++) {
     masked = masked + '*';
   }
 
@@ -15,5 +10,5 @@ var maskPubAddress = exports.maskPubAddress = function maskPubAddress(pub) {
 };
 
 module.exports = {
-  maskPubAddress: maskPubAddress
+  maskPubAddress
 };

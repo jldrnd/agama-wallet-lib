@@ -1,8 +1,6 @@
-"use strict";
-
 // ref: https://css-tricks.com/snippets/javascript/javascript-md5/
 
-var md5 = function md5(string) {
+const md5 = function (string) {
   function RotateLeft(lValue, iShiftBits) {
     return lValue << iShiftBits | lValue >>> 32 - iShiftBits;
   }

@@ -1,7 +1,3 @@
-'use strict';
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 /*
 MIT License
 
@@ -29,7 +25,7 @@ Supported coin types: bitcoin, bitcoin forks BTG and BCH, zcash based coins, PoS
 
 */
 
-var bitcoinLib = {
+const bitcoinLib = {
   bitcoinPos: {
     main: require('bitcoinjs-lib-pos'),
     script: require('bitcoinjs-lib-pos/src/script'),
@@ -38,32 +34,31 @@ var bitcoinLib = {
   bitcoinZcash: require('bitcoinjs-lib-zcash'),
   bitcoin: require('bitcoinjs-lib')
 };
-var bitcoin = void 0;
+let bitcoin;
 
 // zcash tx decode fallback
-var Buffer = require('safe-buffer').Buffer;
-
-var _require = require('tx-decoder/build/buffer-utils'),
-    readSlice = _require.readSlice,
-    readInt32 = _require.readInt32,
-    readUInt32 = _require.readUInt32;
-
-var _require2 = require('tx-decoder/build/compose'),
-    compose = _require2.compose,
-    addProp = _require2.addProp;
-
-var _require3 = require('tx-decoder/build/tx-decoder'),
-    readInputs = _require3.readInputs,
-    readInput = _require3.readInput,
-    readOutput = _require3.readOutput;
-
-var crypto = require('crypto');
-var _sha256 = function _sha256(data) {
+const Buffer = require('safe-buffer').Buffer;
+const {
+  readSlice,
+  readInt32,
+  readUInt32
+} = require('tx-decoder/build/buffer-utils');
+const {
+  compose,
+  addProp
+} = require('tx-decoder/build/compose');
+const {
+  readInputs,
+  readInput,
+  readOutput
+} = require('tx-decoder/build/tx-decoder');
+const crypto = require('crypto');
+const _sha256 = data => {
   return crypto.createHash('sha256').update(data).digest();
 };
 
-var decodeFormat = function decodeFormat(tx) {
-  var result = {
+const decodeFormat = tx => {
+  const result = {
     txid: tx.getId(),
     version: tx.version,
     locktime: tx.locktime
@@ -72,11 +67,11 @@ var decodeFormat = function decodeFormat(tx) {
   return result;
 };
 
-var decodeInput = function decodeInput(tx, network) {
-  var result = [];
+const decodeInput = (tx, network) => {
+  let result = [];
 
-  tx.ins.forEach(function (input, n) {
-    var vin = {
+  tx.ins.forEach((input, n) => {
+    const vin = {
       txid: !input.hash.reverse ? input.hash : input.hash.reverse().toString('hex'),
       n: input.index,
       script: network.isPoS ? bitcoinLib.bitcoinPos.script.fromHex(input.hash) : bitcoin.script.toASM(input.script),
@@ -89,9 +84,9 @@ var decodeInput = function decodeInput(tx, network) {
   return result;
 };
 
-var decodeOutput = function decodeOutput(tx, network) {
-  var format = function format(out, n, network) {
-    var vout = {
+const decodeOutput = (tx, network) => {
+  const format = (out, n, network) => {
+    let vout = {
       satoshi: out.value,
       value: (1e-8 * out.value).toFixed(8),
       n: n,
@@ -112,7 +107,7 @@ var decodeOutput = function decodeOutput(tx, network) {
         }
         break;
       case 'pubkey':
-        var pubKeyBuffer = new Buffer(vout.scriptPubKey.asm.split(' ')[0], 'hex');
+        const pubKeyBuffer = new Buffer(vout.scriptPubKey.asm.split(' ')[0], 'hex');
         vout.scriptPubKey.addresses.push(bitcoin.ECPair.fromPublicKeyBuffer(pubKeyBuffer, network).getAddress());
         break;
       case 'scripthash':
@@ -127,16 +122,16 @@ var decodeOutput = function decodeOutput(tx, network) {
     return vout;
   };
 
-  var result = [];
+  let result = [];
 
-  tx.outs.forEach(function (out, n) {
+  tx.outs.forEach((out, n) => {
     result.push(format(out, n, network));
   });
 
   return result;
 };
 
-var transactionDecoder = function transactionDecoder(rawtx, network, debug) {
+let transactionDecoder = (rawtx, network, debug) => {
   if (network.isPoS) {
     bitcoin = bitcoinLib.bitcoinPos.main;
   } else if (network.isZcash) {
@@ -146,7 +141,7 @@ var transactionDecoder = function transactionDecoder(rawtx, network, debug) {
   }
 
   if (debug) {
-    var _tx = bitcoin.Transaction.fromHex(rawtx);
+    const _tx = bitcoin.Transaction.fromHex(rawtx);
 
     return {
       tx: _tx,
@@ -157,28 +152,22 @@ var transactionDecoder = function transactionDecoder(rawtx, network, debug) {
     };
   } else {
     if (network.isZcash) {
-      var buffer = Buffer.from(rawtx, 'hex');
+      const buffer = Buffer.from(rawtx, 'hex');
 
-      var decodeTx = function decodeTx(buffer) {
-        return compose([addProp('version', readInt32), // 4 bytes
-        addProp('ins', readInputs(readInput)), // 1-9 bytes (VarInt), Input counter; Variable, Inputs
-        addProp('outs', readInputs(readOutput)), // 1-9 bytes (VarInt), Output counter; Variable, Outputs
-        addProp('locktime', readUInt32) // 4 bytes
-        ])({}, buffer);
-      };
+      const decodeTx = buffer => compose([addProp('version', readInt32), // 4 bytes
+      addProp('ins', readInputs(readInput)), // 1-9 bytes (VarInt), Input counter; Variable, Inputs
+      addProp('outs', readInputs(readOutput)), // 1-9 bytes (VarInt), Output counter; Variable, Outputs
+      addProp('locktime', readUInt32) // 4 bytes
+      ])({}, buffer);
 
-      var readHash = function readHash(buffer) {
-        var _readSlice = readSlice(32)(_sha256(_sha256(buffer))),
-            _readSlice2 = _slicedToArray(_readSlice, 2),
-            res = _readSlice2[0],
-            bufferLeft = _readSlice2[1];
-
-        var hash = Buffer.from(res, 'hex').reverse().toString('hex');
+      const readHash = buffer => {
+        const [res, bufferLeft] = readSlice(32)(_sha256(_sha256(buffer)));
+        const hash = Buffer.from(res, 'hex').reverse().toString('hex');
         return [hash, bufferLeft];
       };
 
-      var decodedtx = decodeTx(buffer);
-      decodedtx[0].getId = function () {
+      let decodedtx = decodeTx(buffer);
+      decodedtx[0].getId = () => {
         return readHash(buffer)[0];
       };
 
@@ -191,14 +180,14 @@ var transactionDecoder = function transactionDecoder(rawtx, network, debug) {
       };
     } else {
       try {
-        var _tx2 = network.isPoS ? bitcoin.Transaction.fromHex(rawtx, network) : bitcoin.Transaction.fromHex(rawtx);
+        const _tx = network.isPoS ? bitcoin.Transaction.fromHex(rawtx, network) : bitcoin.Transaction.fromHex(rawtx);
 
         return {
-          tx: _tx2,
+          tx: _tx,
           network: network,
-          format: decodeFormat(_tx2),
-          inputs: decodeInput(_tx2, network),
-          outputs: decodeOutput(_tx2, network)
+          format: decodeFormat(_tx),
+          inputs: decodeInput(_tx, network),
+          outputs: decodeOutput(_tx, network)
         };
       } catch (e) {
         return false;

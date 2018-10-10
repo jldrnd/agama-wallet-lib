@@ -1,16 +1,14 @@
-"use strict";
-
 // TODO: tiptime != 0 && nLockTime < tiptime
-module.exports = function (locktime, value, height) {
+module.exports = (locktime, value, height) => {
   // value in sats
-  var KOMODO_ENDOFERA = 7777777;
-  var LOCKTIME_THRESHOLD = 500000000;
-  var timestampDiff = Math.floor(Date.now() / 1000) - locktime - 777;
-  var hoursPassed = Math.floor(timestampDiff / 3600);
-  var minutesPassed = Math.floor((timestampDiff - hoursPassed * 3600) / 60);
-  var secondsPassed = timestampDiff - hoursPassed * 3600 - minutesPassed * 60;
-  var timestampDiffMinutes = timestampDiff / 60;
-  var interest = 0;
+  const KOMODO_ENDOFERA = 7777777;
+  const LOCKTIME_THRESHOLD = 500000000;
+  const timestampDiff = Math.floor(Date.now() / 1000) - locktime - 777;
+  const hoursPassed = Math.floor(timestampDiff / 3600);
+  const minutesPassed = Math.floor((timestampDiff - hoursPassed * 3600) / 60);
+  const secondsPassed = timestampDiff - hoursPassed * 3600 - minutesPassed * 60;
+  let timestampDiffMinutes = timestampDiff / 60;
+  let interest = 0;
 
   // calc interest
   if (height < KOMODO_ENDOFERA && locktime >= LOCKTIME_THRESHOLD) {

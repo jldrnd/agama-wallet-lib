@@ -1,5 +1,3 @@
-'use strict';
-
 /******************************************************************************
  * Copyright © 2016 The Waves Core Developers.                             	  *
  *                                                                            *
@@ -16,23 +14,23 @@
  *                                                                            *
  ******************************************************************************/
 
-var bip39 = require('bip39');
+const bip39 = require('bip39');
 
-var passphraseGenerator = {
-  generatePassPhrase: function generatePassPhrase(bitsval) {
+const passphraseGenerator = {
+  generatePassPhrase: bitsval => {
     return bip39.generateMnemonic(bitsval);
   },
 
   // checks if it's possible that the pass phrase words supplied as the first parameter
   // were generated with the number of bits supplied as the second parameter
-  isPassPhraseValid: function isPassPhraseValid(passPhraseWords, bits) {
+  isPassPhraseValid: (passPhraseWords, bits) => {
     // the required number of words based on the number of bits
     // mirrors the generatePassPhrase function above
-    var wordsCount = bits / 32 * 3;
+    const wordsCount = bits / 32 * 3;
     return passPhraseWords && passPhraseWords.length === wordsCount;
   },
 
-  arePassPhraseWordsValid: function arePassPhraseWordsValid(passphrase) {
+  arePassPhraseWordsValid: passphrase => {
     return bip39.validateMnemonic(passphrase);
   }
 };

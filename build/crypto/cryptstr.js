@@ -1,45 +1,43 @@
-'use strict';
+const aes256 = require('nodejs-aes256');
+const iocane = require('iocane');
+const session = iocane.createSession().use('cbc').setDerivationRounds(300000);
 
-var aes256 = require('nodejs-aes256');
-var iocane = require('iocane');
-var session = iocane.createSession().use('cbc').setDerivationRounds(300000);
+const _encrypt = session.encrypt.bind(session);
+const _decrypt = session.decrypt.bind(session);
+const Promise = require('bluebird');
 
-var _encrypt = session.encrypt.bind(session);
-var _decrypt = session.decrypt.bind(session);
-var Promise = require('bluebird');
-
-var encrypt = function encrypt(cipherKey, string, testPinStrength) {
-  return new Promise(function (resolve, reject) {
+const encrypt = (cipherKey, string, testPinStrength) => {
+  return new Promise((resolve, reject) => {
     if (testPinStrength) {
-      var passwdStrength = require('passwd-strength');
+      const passwdStrength = require('passwd-strength');
 
       if (passwdStrength(_pin) < 29) {
         resolve(-1);
       }
     } else {
-      _encrypt(string, cipherKey).then(function (encryptedString) {
+      _encrypt(string, cipherKey).then(encryptedString => {
         resolve(encryptedString);
       });
     }
   });
 };
 
-var decrypt = function decrypt(cipherKey, string) {
-  var encryptedKey = aes256.decrypt(cipherKey, string);
+const decrypt = (cipherKey, string) => {
+  const encryptedKey = aes256.decrypt(cipherKey, string);
   // test if stored encrypted passphrase is decrypted correctly
   // if not then the key is wrong
-  var _regexTest = encryptedKey.match(/^[0-9a-zA-Z ]+$/g);
+  const _regexTest = encryptedKey.match(/^[0-9a-zA-Z ]+$/g);
 
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (_regexTest) {
       resolve({
         string: encryptedKey,
         old: true
       });
     } else {
-      _decrypt(string, cipherKey).then(function (decryptedKey) {
+      _decrypt(string, cipherKey).then(decryptedKey => {
         resolve({ string: decryptedKey });
-      }).catch(function (err) {
+      }).catch(err => {
         resolve(false);
       });
     }
@@ -47,6 +45,6 @@ var decrypt = function decrypt(cipherKey, string) {
 };
 
 module.exports = {
-  encrypt: encrypt,
-  decrypt: decrypt
+  encrypt,
+  decrypt
 };

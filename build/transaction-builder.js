@@ -1,17 +1,15 @@
-'use strict';
-
-var bitcoinJSForks = require('bitcoinforksjs-lib');
-var bitcoinZcash = require('bitcoinjs-lib-zcash');
-var bitcoinPos = require('bitcoinjs-lib-pos');
-var bitcoin = require('bitcoinjs-lib');
-var utils = require('./utils');
-var coinselect = require('coinselect');
+const bitcoinJSForks = require('bitcoinforksjs-lib');
+const bitcoinZcash = require('bitcoinjs-lib-zcash');
+const bitcoinPos = require('bitcoinjs-lib-pos');
+const bitcoin = require('bitcoinjs-lib');
+const utils = require('./utils');
+const coinselect = require('coinselect');
 
 // single sig
-var transaction = function transaction(sendTo, changeAddress, wif, network, utxo, changeValue, spendValue, opreturn) {
-  var key = network.isZcash ? bitcoinZcash.ECPair.fromWIF(wif, network) : bitcoin.ECPair.fromWIF(wif, network);
-  var tx = void 0;
-  var btcFork = {};
+const transaction = (sendTo, changeAddress, wif, network, utxo, changeValue, spendValue, opreturn) => {
+  let key = network.isZcash ? bitcoinZcash.ECPair.fromWIF(wif, network) : bitcoin.ECPair.fromWIF(wif, network);
+  let tx;
+  let btcFork = {};
 
   if (network.isZcash) {
     tx = new bitcoinZcash.TransactionBuilder(network);
@@ -19,9 +17,9 @@ var transaction = function transaction(sendTo, changeAddress, wif, network, utxo
     tx = new bitcoinPos.TransactionBuilder(network);
   } else if (network.isBtcFork) {
     tx = new bitcoinJSForks.TransactionBuilder(network);
-    var keyPair = bitcoinJSForks.ECPair.fromWIF(wif, network);
+    const keyPair = bitcoinJSForks.ECPair.fromWIF(wif, network);
     btcFork = {
-      keyPair: keyPair,
+      keyPair,
       pk: bitcoinJSForks.crypto.hash160(keyPair.getPublicKeyBuffer()),
       spk: bitcoinJSForks.script.pubKeyHash.output.encode(bitcoinJSForks.crypto.hash160(keyPair.getPublicKeyBuffer()))
     };
@@ -29,7 +27,7 @@ var transaction = function transaction(sendTo, changeAddress, wif, network, utxo
     tx = new bitcoin.TransactionBuilder(network);
   }
 
-  for (var i = 0; i < utxo.length; i++) {
+  for (let i = 0; i < utxo.length; i++) {
     if (network.isBtcFork) {
       tx.addInput(utxo[i].txid, utxo[i].vout, bitcoinJSForks.Transaction.DEFAULT_SEQUENCE, btcFork.spk);
     } else {
@@ -52,8 +50,8 @@ var transaction = function transaction(sendTo, changeAddress, wif, network, utxo
   }
 
   if (opreturn) {
-    var _data = Buffer.from(opreturn, 'utf8');
-    var dataScript = bitcoin.script.nullData.output.encode(_data);
+    const data = Buffer.from(opreturn, 'utf8');
+    const dataScript = bitcoin.script.nullData.output.encode(data);
     tx.addOutput(dataScript, 1000);
   }
 
@@ -66,42 +64,42 @@ var transaction = function transaction(sendTo, changeAddress, wif, network, utxo
   }
 
   if (network.kmdInterest) {
-    var _locktime = Math.floor(Date.now() / 1000) - 777;
+    const _locktime = Math.floor(Date.now() / 1000) - 777;
     tx.setLockTime(_locktime);
   }
 
-  for (var _i = 0; _i < utxo.length; _i++) {
+  for (let i = 0; i < utxo.length; i++) {
     if (network.isPoS) {
-      tx.sign(network, _i, key);
+      tx.sign(network, i, key);
     } else if (network.isBtcFork) {
-      var hashType = bitcoinJSForks.Transaction.SIGHASH_ALL | bitcoinJSForks.Transaction.SIGHASH_BITCOINCASHBIP143;
-      tx.sign(_i, btcFork.keyPair, null, hashType, utxo[_i].value);
+      const hashType = bitcoinJSForks.Transaction.SIGHASH_ALL | bitcoinJSForks.Transaction.SIGHASH_BITCOINCASHBIP143;
+      tx.sign(i, btcFork.keyPair, null, hashType, utxo[i].value);
     } else {
-      tx.sign(_i, key);
+      tx.sign(i, key);
     }
   }
 
-  var rawtx = tx.build().toHex();
+  const rawtx = tx.build().toHex();
 
   return rawtx;
 };
 
 // TODO: merge sendmany
-var data = function data(network, value, fee, outputAddress, changeAddress, utxoList) {
-  var btcFee = fee.perbyte ? fee.value : null; // TODO: coin non specific switch static/dynamic fee
+const data = (network, value, fee, outputAddress, changeAddress, utxoList) => {
+  const btcFee = fee.perbyte ? fee.value : null; // TODO: coin non specific switch static/dynamic fee
 
   if (btcFee) {
     fee = 0;
   }
 
   if (utxoList && utxoList.length && utxoList[0] && utxoList[0].txid) {
-    var utxoListFormatted = [];
-    var totalInterest = 0;
-    var totalInterestUTXOCount = 0;
-    var interestClaimThreshold = 200;
-    var utxoVerified = true;
+    let utxoListFormatted = [];
+    let totalInterest = 0;
+    let totalInterestUTXOCount = 0;
+    let interestClaimThreshold = 200;
+    let utxoVerified = true;
 
-    for (var i = 0; i < utxoList.length; i++) {
+    for (let i = 0; i < utxoList.length; i++) {
       if (network.kmdInterest) {
         utxoListFormatted.push({
           txid: utxoList[i].txid,
@@ -120,8 +118,8 @@ var data = function data(network, value, fee, outputAddress, changeAddress, utxo
       }
     }
 
-    var _maxSpendBalance = Number(utils.maxSpendBalance(utxoListFormatted));
-    var targets = [{
+    const _maxSpendBalance = Number(utils.maxSpendBalance(utxoListFormatted));
+    let targets = [{
       address: outputAddress,
       value: value > _maxSpendBalance ? _maxSpendBalance : value
     }];
@@ -131,9 +129,9 @@ var data = function data(network, value, fee, outputAddress, changeAddress, utxo
     // default coin selection algo blackjack with fallback to accumulative
     // make a first run, calc approx tx fee
     // if ins and outs are empty reduce max spend by txfee
-    var firstRun = coinselect(utxoListFormatted, targets, btcFee ? btcFee : 0);
-    var inputs = firstRun.inputs;
-    var outputs = firstRun.outputs;
+    const firstRun = coinselect(utxoListFormatted, targets, btcFee ? btcFee : 0);
+    let inputs = firstRun.inputs;
+    let outputs = firstRun.outputs;
 
     if (btcFee) {
       fee = firstRun.fee;
@@ -142,13 +140,13 @@ var data = function data(network, value, fee, outputAddress, changeAddress, utxo
     if (!outputs) {
       targets[0].value = targets[0].value - fee;
 
-      var secondRun = coinselect(utxoListFormatted, targets, 0);
+      const secondRun = coinselect(utxoListFormatted, targets, 0);
       inputs = secondRun.inputs;
       outputs = secondRun.outputs;
       fee = fee ? fee : secondRun.fee;
     }
 
-    var _change = 0;
+    let _change = 0;
 
     if (outputs && outputs.length === 2) {
       _change = outputs[1].value - fee;
@@ -168,25 +166,25 @@ var data = function data(network, value, fee, outputAddress, changeAddress, utxo
 
     // check if any outputs are unverified
     if (inputs && inputs.length) {
-      for (var _i2 = 0; _i2 < inputs.length; _i2++) {
-        if (!inputs[_i2].verified) {
+      for (let i = 0; i < inputs.length; i++) {
+        if (!inputs[i].verified) {
           utxoVerified = false;
           break;
         }
       }
 
-      for (var _i3 = 0; _i3 < inputs.length; _i3++) {
-        if (Number(inputs[_i3].interestSats) > interestClaimThreshold) {
-          totalInterest += Number(inputs[_i3].interestSats);
+      for (let i = 0; i < inputs.length; i++) {
+        if (Number(inputs[i].interestSats) > interestClaimThreshold) {
+          totalInterest += Number(inputs[i].interestSats);
           totalInterestUTXOCount++;
         }
       }
     }
 
-    var _maxSpend = utils.maxSpendBalance(utxoListFormatted);
+    const _maxSpend = utils.maxSpendBalance(utxoListFormatted);
 
     if (value > _maxSpend) {
-      return 'Spend value is too large. Max available amount is ' + Number((_maxSpend * 0.00000001).toFixed(8));
+      return `Spend value is too large. Max available amount is ${Number((_maxSpend * 0.00000001).toFixed(8))}`;
     } else {
       // account for KMD interest
       if (network.kmdInterest && totalInterest > 0) {
@@ -213,13 +211,13 @@ var data = function data(network, value, fee, outputAddress, changeAddress, utxo
       if (!inputs && !outputs) {
         return 'Can\'t find best fit utxo. Try lower amount.';
       } else {
-        var vinSum = 0;
+        let vinSum = 0;
 
-        for (var _i4 = 0; _i4 < inputs.length; _i4++) {
-          vinSum += inputs[_i4].value;
+        for (let i = 0; i < inputs.length; i++) {
+          vinSum += inputs[i].value;
         }
 
-        var _estimatedFee = vinSum - outputs[0].value - _change;
+        const _estimatedFee = vinSum - outputs[0].value - _change;
 
         // double check no extra fee is applied
         if (vinSum - value - _change > fee) {
@@ -235,19 +233,19 @@ var data = function data(network, value, fee, outputAddress, changeAddress, utxo
         }
 
         return {
-          outputAddress: outputAddress,
-          changeAddress: changeAddress,
-          network: network,
+          outputAddress,
+          changeAddress,
+          network,
           change: _change,
-          value: value,
-          inputs: inputs,
-          outputs: outputs,
-          targets: targets,
-          fee: fee,
+          value,
+          inputs,
+          outputs,
+          targets,
+          fee,
           estimatedFee: _estimatedFee,
           balance: _maxSpendBalance,
-          totalInterest: totalInterest,
-          utxoVerified: utxoVerified
+          totalInterest,
+          utxoVerified
         };
       }
     }
@@ -257,6 +255,6 @@ var data = function data(network, value, fee, outputAddress, changeAddress, utxo
 };
 
 module.exports = {
-  data: data,
-  transaction: transaction
+  data,
+  transaction
 };

@@ -1,29 +1,27 @@
-'use strict';
-
-var eservers = require('./electrum-servers');
-var btcnetworks = require('./bitcoinjs-networks');
-var decoder = require('./transaction-decoder');
-var coin = require('./coin-helpers');
-var time = require('./time');
-var crypto = require('./crypto/index-fe');
-var utils = require('./utils');
-var keys = require('./keys');
-var komodoInterest = require('./komodo-interest');
-var transactionBuilder = require('./transaction-builder');
-var transactionType = require('./transaction-type');
-var getMerkleRoot = require('./transaction-merkle');
+const eservers = require('./electrum-servers');
+const btcnetworks = require('./bitcoinjs-networks');
+const decoder = require('./transaction-decoder');
+const coin = require('./coin-helpers');
+const time = require('./time');
+const crypto = require('./crypto/index-fe');
+const utils = require('./utils');
+const keys = require('./keys');
+const komodoInterest = require('./komodo-interest');
+const transactionBuilder = require('./transaction-builder');
+const transactionType = require('./transaction-type');
+const getMerkleRoot = require('./transaction-merkle');
 
 module.exports = {
-  eservers: eservers,
-  btcnetworks: btcnetworks,
-  decoder: decoder,
-  coin: coin,
-  time: time,
-  crypto: crypto,
-  utils: utils,
-  komodoInterest: komodoInterest,
-  transactionBuilder: transactionBuilder,
-  transactionType: transactionType,
-  getMerkleRoot: getMerkleRoot,
-  keys: keys
+  eservers,
+  btcnetworks,
+  decoder,
+  coin,
+  time,
+  crypto,
+  utils,
+  komodoInterest,
+  transactionBuilder,
+  transactionType,
+  getMerkleRoot,
+  keys
 };

@@ -1,6 +1,4 @@
-'use strict';
-
-var electrumServers = {
+const electrumServers = {
   zilla: {
     txfee: 10000,
     serverList: ['electrum1.cipig.net:10028:tcp', 'electrum2.cipig.net:10028:tcp']
@@ -271,6 +269,10 @@ var electrumServers = {
   mnx: {
     txfee: 10000,
     serverList: ['electrum1.cipig.net:10079:tcp', 'electrum2.cipig.net:10079:tcp', 'electrum3.cipig.net:10079:tcp']
+  },
+  dion: {
+    txfee: 10000,
+    serverList: ['78.47.205.239:3050:tcp', '51.75.124.32:3001:tcp']
   }
 };
 
