@@ -1,5 +1,5 @@
 {
-  "_from": "git://github.com/pbca26/agama-wallet-lib.git#dev",
+  "_from": "git://github.com/jldrnd/agama-wallet-lib.git#dev",
   "_id": "agama-wallet-lib@0.1.6",
   "_inBundle": false,
   "_integrity": "",
@@ -7,24 +7,24 @@
   "_phantomChildren": {},
   "_requested": {
     "type": "git",
-    "raw": "git://github.com/pbca26/agama-wallet-lib.git#dev",
-    "rawSpec": "git://github.com/pbca26/agama-wallet-lib.git#dev",
-    "saveSpec": "git://github.com/pbca26/agama-wallet-lib.git#dev",
-    "fetchSpec": "git://github.com/pbca26/agama-wallet-lib.git",
+    "raw": "git://github.com/jldrnd/agama-wallet-lib.git#dev",
+    "rawSpec": "git://github.com/jldrnd/agama-wallet-lib.git#dev",
+    "saveSpec": "git://github.com/jldrnd/agama-wallet-lib.git#dev",
+    "fetchSpec": "git://github.com/jldrnd/agama-wallet-lib.git",
     "gitCommittish": "dev"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "git://github.com/pbca26/agama-wallet-lib.git#a7346abbfceb81be8bdd1dc320560f9181aaed57",
-  "_spec": "git://github.com/pbca26/agama-wallet-lib.git#dev",
+  "_resolved": "git://github.com/jldrnd/agama-wallet-lib.git#a7346abbfceb81be8bdd1dc320560f9181aaed57",
+  "_spec": "git://github.com/jldrnd/agama-wallet-lib.git#dev",
   "_where": "/Users/ca/Documents/DEV/agama",
   "author": {
     "name": "SuperNET"
   },
   "bugs": {
-    "url": "https://github.com/pbca26/agama-wallet-lib/issues"
+    "url": "https://github.com/jldrnd/agama-wallet-lib/issues"
   },
   "bundleDependencies": false,
   "dependencies": {
@@ -57,7 +57,7 @@
     "src",
     "build"
   ],
-  "homepage": "https://github.com/pbca26/agama-wallet-lib",
+  "homepage": "https://github.com/jldrnd/agama-wallet-lib",
   "keywords": [
     "agama wallet",
     "wallet",
@@ -69,7 +69,7 @@
   "name": "agama-wallet-lib",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pbca26/agama-wallet-lib.git"
+    "url": "git+https://github.com/jldrnd/agama-wallet-lib.git"
   },
   "scripts": {
     "build": "babel src -d build"
